@@ -7,7 +7,7 @@
 typedef struct {
     int width;
     int height;
-    uint8_t *pixels; // arreglo plano de width*height bytes
+    uint8_t *pixels; // arreglo plano de width*height bytes. uso de uint8_t (1 byte) para representar 0 o 1 en cada pixel
 } Image;
 
 // Entradas: ruta del archivo .bin
