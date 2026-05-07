@@ -20,15 +20,15 @@ int main(int argc, char *argv[]) {
             case 'o': output_path = optarg;       break;
             case 'd': debug = 1;                  break;
             default:
-                fprintf(stderr, "Usage: ./lab1 -i input.bin -r radius -t threshold -o output.csv [-d]\n");
+                fprintf(stderr, "Uso: %s -i entrada.bin -r radio -t umbral -o salida.csv [-d]\n", argv[0]);
                 exit(EXIT_FAILURE);
         }
     }
 
     // verificar que los flags obligatorios esten presentes
     if (!input_path || !output_path || radius == 0 || threshold == 0) {
-        fprintf(stderr, "Error: missing required flags\n");
-        fprintf(stderr, "Usage: ./lab1 -i input.bin -r radius -t threshold -o output.csv [-d]\n");
+        fprintf(stderr, "Error: Faltan argumentos obligatorios\n");
+        fprintf(stderr, "Uso: %s -i entrada.bin -r radio -t umbral -o salida.csv [-d]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
     // se prepara la imagen con erosion y dilatacion (apertura) para eliminar ruido
     Image eroded = erosion(original);
     Image preprocessed = dilation(eroded);
+    free_image(eroded);
 
     // se calcula el ruido eliminado: original - preprocesada
     Image noise = subtract_images(original, preprocessed);
@@ -50,10 +51,10 @@ int main(int argc, char *argv[]) {
 
     // detectan circulos con hough y se escribe el CSV
     hough(preprocessed, radius, threshold, output_path);
+    printf("Deteccion completada. Resultados guardados en %s\n", output_path);
 
     // se libera la memoria
     free_image(original);
-    free_image(eroded);
     free_image(preprocessed);
     free_image(noise);
 

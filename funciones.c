@@ -25,13 +25,13 @@ Image read_image(const char *path) {
         exit(EXIT_FAILURE);
     }
 
-    fread(img.pixels, sizeof(uint8_t), img.width * img.height, file); // carga todos los pixels 
+    fread(img.pixels, sizeof(uint8_t), img.width * img.height, file); // carga todos los pixels
     fclose(file);
     return img;
 }
 
 // Entradas: struct Image a guardar, ruta del archivo de destino
-// Salidas: ninguna 
+// Salidas: ninguna
 // Descripcion: Abre un archivo binario para escritura, escribe el width y height (4 bytes cada uno), luego escribe el arreglo de pixels completo (width*height bytes)
 void write_image(Image img, const char *path) {
     FILE *file = fopen(path, "wb");
@@ -40,10 +40,10 @@ void write_image(Image img, const char *path) {
         exit(EXIT_FAILURE);
     }
 
-    fwrite(&img.width, sizeof(int), 1, file);   // escribe 4 bytes correspondientes al ancho de la imagen 
+    fwrite(&img.width, sizeof(int), 1, file);   // escribe 4 bytes correspondientes al ancho de la imagen
     fwrite(&img.height, sizeof(int), 1, file);  // escribe 4 bytes correspondientes a la altura de la imagen
 
-    // escribe todos los pixels 
+    // escribe todos los pixels
     fwrite(img.pixels, sizeof(uint8_t), img.width * img.height, file);
 
     fclose(file);
@@ -132,7 +132,7 @@ Image dilation(Image img) {
     return result;
 }
 
-//subtract_images resta pixel a pixel la imagen dilatada de la erosionada, dejando solo los bordes del objeto: original - preprocesada = ruido.    
+//subtract_images resta pixel a pixel la imagen dilatada de la erosionada, dejando solo los bordes del objeto: original - preprocesada = ruido.
 // Entradas: Image original con ruido, Image preprocesada (resultado de erosion + dilatacion)
 // Salidas: nueva Image con los pixels que fueron eliminados durante el preprocesamiento
 // Descripcion: Resta pixel a pixel original - preprocesada. El resultado son los pixels que existian en la original pero que no sobrevivieron la apertura (el ruido).
@@ -154,7 +154,7 @@ Image subtract_images(Image original, Image preprocessed) {
             // si el pixel existia en original pero no en preprocesada, es ruido
             int diff = original.pixels[idx] - preprocessed.pixels[idx];
             // se usa operarador ternario para darle el valor de 1 la resta es positiva (era ruido) o 0 si es negativa (no era ruido). Clampea a 0 si negativo con el fin de evitar valores negativos.
-            result.pixels[idx] = (diff > 0) ? 1 : 0; 
+            result.pixels[idx] = (diff > 0) ? 1 : 0;
         }
     }
 
@@ -169,7 +169,66 @@ void free_image(Image img) {
 }
 
 
-// stub temporal está pendiente
+// Entradas: Image a procesar, radio de la circunferencia, umbral de deteccion, ruta del archivo CSV para guardar los resultados
+// Salidas: ninguna
+// Descripcion: Implementacion del algoritmo de Hough para detectar circunferencias en una imagen. Al finalizar, guarda los resultados en un archivo CSV.
 void hough(Image img, int radius, int threshold, const char *csv_path) {
-    printf("hough: not implemented yet\n");
+    int W = img.width;
+    int H = img.height;
+
+    // Inicializacion del acumulador
+    int *accumulator = (int *)calloc(W * H, sizeof(int));
+    if (!accumulator) {
+        fprintf(stderr, "Error al asignar memoria para el acumulador\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int grades = 360; // Numero de grados en la circunferencia
+
+
+    // fila
+    for (int i = 0; i < H; i++) {
+        // columna
+        for (int j = 0; j < W; j++) {
+            if(img.pixels[i * W + j] == 0) continue;
+            for (int k = 0; k < grades; k++) {
+
+                double theta = 2.0 * M_PI * k / grades; // Calculo del angulo theta en radianes para trabajar con cos y sin segun transformada
+
+                // Calculo de las coordenadas x e y en la imagen para el punto en la circunferencia
+                int x = (int)round(j + radius * cos(theta));
+                int y = (int)round(i + radius * sin(theta));
+
+                // Verificacion de que las coordenadas x e y estan dentro de los limites de la imagen
+                if (x < 0 || x >= W || y < 0 || y >= H) {
+                    continue;
+                }
+
+                // Incremento del acumulador en la posicion correspondiente
+                accumulator[y * W + x]++;
+            }
+        }
+    }
+
+    // Guardado de los resultados en un archivo CSV
+    FILE *csv = fopen(csv_path, "w");
+    if (!csv) {
+        fprintf(stderr, "Error al crear archivo CSV: %s\n", csv_path);
+        free(accumulator);
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(csv, "X,Y\n");
+    for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++) {
+            if (accumulator[i * W + j] >= threshold) {
+                fprintf(csv, "%d,%d\n", i, j);
+            }
+        }
+    }
+
+    // Cierre del archivo CSV y liberacion de memoria
+    fclose(csv);
+    free(accumulator);
+
 }
