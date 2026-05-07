@@ -183,7 +183,7 @@ void hough(Image img, int radius, int threshold, const char *csv_path) {
         exit(EXIT_FAILURE);
     }
 
-    int grades = 360; // Numero de grados en la circunferencia
+    int grades = 360;
 
 
     // fila
