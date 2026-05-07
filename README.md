@@ -12,17 +12,21 @@ make
 Archivo de entrada: .bin para la imagen de entrada generado a partir de GenerarDatos.py
 
 ## Flags
--i: imagen de entrada (.bin)
--r: radio de los circulos a detectar
--t: umbral minimo de votos
--o: archivo de salida (.csv)
--d: activa debug (genera preprocesada.bin y ruido.bin)
+- -i: imagen de entrada (.bin)
+- -r: radio de los circulos a detectar
+- -t: umbral minimo de votos
+- -o: archivo de salida (.csv)
+- -d: activa debug (genera preprocesada.bin y ruido.bin)
 
 
 
 # Ejecución
+```
 ./lab1 -i entrada.bin -r "radio generadio" -t "umbral" -o "archivo_salida.csv"
+```
+```
 ./lab1 -i entrada.bin -r "radio generadio" -t "umbral" -o "archivo_salida.csv" -d (Para debugear)
+```
 
 Ejemplo de ejecución con los parametros por defecto de la generación de datos segun GenerarDatos.py:
 
