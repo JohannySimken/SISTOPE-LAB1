@@ -196,8 +196,8 @@ void hough(Image img, int radius, int threshold, const char *csv_path) {
                 double theta = 2.0 * M_PI * k / grades; // Calculo del angulo theta en radianes para trabajar con cos y sin segun transformada
 
                 // Calculo de las coordenadas x e y en la imagen para el punto en la circunferencia
-                int x = (int)round(j + radius * cos(theta));
-                int y = (int)round(i + radius * sin(theta));
+                int x = (int)round(j - radius * cos(theta));
+                int y = (int)round(i - radius * sin(theta));
 
                 // Verificacion de que las coordenadas x e y estan dentro de los limites de la imagen
                 if (x < 0 || x >= W || y < 0 || y >= H) {
@@ -222,11 +222,10 @@ void hough(Image img, int radius, int threshold, const char *csv_path) {
     for (int i = 0; i < H; i++) {
         for (int j = 0; j < W; j++) {
             if (accumulator[i * W + j] >= threshold) {
-                fprintf(csv, "%d,%d\n", i, j);
+                fprintf(csv, "%d,%d\n", j, i);
             }
         }
     }
-
     // Cierre del archivo CSV y liberacion de memoria
     fclose(csv);
     free(accumulator);

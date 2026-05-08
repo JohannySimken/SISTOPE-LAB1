@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
             case 'o': output_path = optarg;       break;
             case 'd': debug = 1;                  break;
             default:
-                fprintf(stderr, "Uso: %s -i entrada.bin -r radio -t umbral -o salida.csv [-d]\n", argv[0]);
+                fprintf(stderr, "Uso: %s -i entrada.bin -r radio -t umbral -o salida.csv -d\n", argv[0]);
                 exit(EXIT_FAILURE);
         }
     }
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     // verificar que los flags obligatorios esten presentes
     if (!input_path || !output_path || radius == 0 || threshold == 0) {
         fprintf(stderr, "Error: Faltan argumentos obligatorios\n");
-        fprintf(stderr, "Uso: %s -i entrada.bin -r radio -t umbral -o salida.csv [-d]\n", argv[0]);
+        fprintf(stderr, "Uso: %s -i entrada.bin -r radio -t umbral -o salida.csv -d\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
